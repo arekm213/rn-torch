@@ -1,5 +1,5 @@
-import { StyleSheet, Text, View, TouchableOpacity, Platform, TextInput } from 'react-native';
-import {useEffect, useState} from 'react';
+import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import {useEffect} from 'react';
 import Slider from '@react-native-community/slider';
 
 import * as Torch from 'expo-torch';
@@ -7,29 +7,34 @@ import * as Torch from 'expo-torch';
 export default function App() {
   const torchStrengthArray = [0,1,2,3,4,5]
 
-  useEffect(() => {
-    const getTorchStrength = async () => {
-      const torchMaxStrength = await Torch.getMaxLevel();
-      const torchStrength = await Torch.getCurrentLevel();
-      const defaultTorchStrength = await Torch.getDefaultLevel();
-      console.log({defaultTorchStrength, torchMaxStrength, torchStrength});
-    }
-    getTorchStrength();
-  }, [])
+  const showTorchLevels = async() => {
+    const torchMaxStrength = await Torch.getMaxLevel();
+    const torchStrength = await Torch.getCurrentLevel();
+    const defaultTorchStrength = await Torch.getDefaultLevel();
+    console.log({defaultTorchStrength, torchMaxStrength, torchStrength});
+  }
 
+  const turnOn = () => {
+    Torch.setMode(true);
+  }
+
+  const turnOff = () => {
+    Torch.setMode(false);
+  }
+
+  useEffect(() => {
+    showTorchLevels();
+  }, [])
 
   return (
     <View style={styles.container}>
       <Text></Text>
-      <TouchableOpacity style={{ width: 100, height: 100, backgroundColor:'red' }} onPress={() => Torch.setMode(true)} />
-      <TouchableOpacity style={{ width: 100, height: 100, backgroundColor:'green' }} onPress={() => Torch.setMode(false)} />
-      <TouchableOpacity style={{ width: 100, height: 100, backgroundColor:'blue' }} onPress={async() => {
-        const torchStrength = await Torch.getCurrentLevel();
-        console.log({torchStrength});
-      }} />
+      <TouchableOpacity style={[styles.rect, { backgroundColor:'green' }]} onPress={turnOn} />
+      <TouchableOpacity style={[styles.rect, { backgroundColor:'red' }]} onPress={turnOff} />
+      <TouchableOpacity style={[styles.rect, { backgroundColor:'blue' }]} onPress={showTorchLevels} />
       <View style={{flexDirection: 'row'}}>
         {torchStrengthArray.map((val) => {
-          return <TouchableOpacity style={{width: 60, height: 60, backgroundColor:'yellow', borderWidth: 1}} onPress={() => Torch.turnOnWithLevel(val)}>
+          return <TouchableOpacity style={[styles.rect, { backgroundColor:'yellow' }]} onPress={() => Torch.turnOnWithLevel(val)}>
             <Text style={{fontSize: 50}}>{val}</Text>
           </TouchableOpacity>
         })}
@@ -49,15 +54,12 @@ export default function App() {
   );
 }
 
-// TODO - Add exception when somebody tries to call turnOnWithStrengthLevel(arg < 1)
-// Add warning if somebody tries to call getMaxStrengthLevel and getDefaultStrengthLevel without android 13 (33)
 
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    // alignItems: 'center',
-    // justifyContent: 'center',
   },
+  rect: { width: 100, height: 100 }
 });
