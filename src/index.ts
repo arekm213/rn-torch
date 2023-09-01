@@ -9,13 +9,21 @@ export async function turnOnWithLevel(value: number) {
   return await ExpoTorchModule.turnOnWithLevel(value);
 }
 
+export async function toggle() {
+  return await ExpoTorchModule.toggle();
+}
+
 export function getMaxLevel(): number {
+  if(Platform.OS === 'ios'){
+    console.warn(`'getMaxLevel' method not available on iOS`);
+    return 0;
+  }
   return ExpoTorchModule.getMaxLevel();
 }
 
 export function getDefaultLevel(): number {
   if(Platform.OS === 'ios'){
-    console.error(`'getDefaultLevel' method not available on iOS`);
+    console.warn(`'getDefaultLevel' method not available on iOS`);
     return 0;
   } else {
     return ExpoTorchModule.getDefaultLevel();
