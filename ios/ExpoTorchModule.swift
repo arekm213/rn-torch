@@ -65,5 +65,22 @@ public class ExpoTorchModule: Module {
       }
       device.unlockForConfiguration()
     }
+    
+    AsyncFunction("toggle") { () in
+      guard let device else {
+        throw NoCameraAccessException()
+      }
+      guard device.hasTorch else {
+        throw TorchNotAvailableException()
+      }
+      
+      try device.lockForConfiguration()
+      if device.torchMode == .off {
+        device.torchMode = .on
+      } else {
+        device.torchMode = .off
+      }
+      device.unlockForConfiguration()
+    }
   }
 }
